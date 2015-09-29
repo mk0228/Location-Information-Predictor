@@ -1,0 +1,122 @@
+/**
+ * Assignment1.java
+ * To make use of web services and develop an application that 
+ * displays information regarding a location
+ * @author Mahalakshmy Krishnamoorthy
+ */
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Iterator;
+import org.json.simple.JSONArray;
+
+// To take the location input parameters and display the output
+public class Assignment1 {
+	public static org.json.JSONObject getJsonObject(URL url) throws Exception
+	{
+		// to send the http request to the url
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		connection.setRequestMethod("GET");
+		connection.connect();
+		BufferedReader bufferReader = new BufferedReader(new InputStreamReader(
+				connection.getInputStream()));
+		String str;
+		StringBuffer stringBuffer = new StringBuffer();
+		// to obtain the JSON response
+		while ((str = bufferReader.readLine()) != null)
+		{
+			stringBuffer.append(str);
+		}
+		str = stringBuffer.toString();
+		org.json.JSONObject obj = new org.json.JSONObject(str);
+	return obj;
+	}
+	
+	// Web service for the weather output
+	public static void getWeather(double lat, double lon) throws Exception
+	{
+		// forming the url for the web service for the request with the entered values
+		String myUrl = "http://api.openweathermap.org/data/2.5/weather?lat="
+			+ lat + "&lon=" + lon + "&units=metric";
+		URL url = new URL(myUrl);
+		org.json.JSONObject obj = getJsonObject(url);
+		JSONArray msg = new JSONArray();
+		// to traverse through the JSON object to obtain the output
+		Iterator<?> itr = obj.keys();
+		while (itr.hasNext())
+		{
+			String key1 = (String) itr.next();
+			if(key1.equals("main")){
+			msg.add(obj.get(key1));
+			}
+		}
+		org.json.JSONObject a = (org.json.JSONObject) msg.get(0);
+		// To get the response value for temperature and display it
+		System.out.println("Temperature: " + a.get("temp") + " Celcius");
+	}
+	
+	// Web service for obtaining address
+	public static void getAddress(double lat, double lon) throws Exception
+	{
+		// forming the url for the web service for the request with the entered values
+		String myUrl = "https://maps.googleapis.com/maps/api/geocode/json?latlng="
+			+ String.valueOf(lat)
+			+ ","
+			+ String.valueOf(lon)
+			+ "&sensor=false";
+		URL url = new URL(myUrl);
+		org.json.JSONObject obj = getJsonObject(url);
+		JSONArray msg = new JSONArray();
+		// to traverse through the JSON object to obtain the output
+		Iterator<?> itr = obj.keys();
+		while (itr.hasNext())
+		{
+			String key1 = (String) itr.next();
+			msg.add(obj.get(key1));
+		}
+		org.json.JSONArray a = (org.json.JSONArray) msg.get(0);
+		org.json.JSONObject c = (org.json.JSONObject) a.get(0);
+		// To get the response value for temperature and display it
+		System.out.println("Address: " + c.get("formatted_address"));
+	}
+	
+	// Web service for obtaining time and date
+	public static void getTimeDate(double lat, double lon) throws Exception
+	{
+		//forming the URL with the request parameters
+		String myUrl = "http://api.worldweatheronline.com/free/v2/tz.ashx?key=7255797cd9c0ebde9bdbcfdb1abfc&q="
+			+ String.valueOf(lat)
+			+ ","
+			+ String.valueOf(lon)
+			+ "&format=json";
+		URL url = new URL(myUrl);
+		org.json.JSONObject obj = getJsonObject(url);
+		JSONArray msg = new JSONArray();
+		Iterator<?> itr = obj.keys();
+		// to traverse through the JSON object to obtain the output
+		while (itr.hasNext())
+		{
+			String key1 = (String) itr.next();
+			msg.add(obj.get(key1));
+		}
+		org.json.JSONObject a = (org.json.JSONObject) msg.get(0);
+		// To get the response value for temperature and display it
+		org.json.JSONArray b = (org.json.JSONArray) a.get("time_zone");
+		// To get the response value for temperature and display it
+		org.json.JSONObject c = (org.json.JSONObject) b.get(0);
+		System.out.println("Time & Date: " + c.get("localtime"));
+	}
+	public static void main(String args[]) throws Exception {
+		BufferedReader d = new BufferedReader(new InputStreamReader(System.in));
+		double lat, lon;
+		// to take in the input values
+		System.out.println("Please enter the lattitude and longitude");
+		lat = Double.parseDouble(d.readLine());
+		lon = Double.parseDouble(d.readLine());
+		// to call the various methods 
+		getAddress(lat, lon);
+		getTimeDate(lat, lon);
+		getWeather(lat, lon);
+	}
+}
