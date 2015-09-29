@@ -1,5 +1,5 @@
 /**
- * Assignment1.java
+ * LocInfo.java
  * To make use of web services and develop an application that 
  * displays information regarding a location
  * @author Mahalakshmy Krishnamoorthy
@@ -12,7 +12,7 @@ import java.util.Iterator;
 import org.json.simple.JSONArray;
 
 // To take the location input parameters and display the output
-public class Assignment1 {
+public class LocInfo {
 	public static org.json.JSONObject getJsonObject(URL url) throws Exception
 	{
 		// to send the http request to the url
